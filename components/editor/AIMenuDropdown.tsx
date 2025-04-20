@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot } from "lexical";
 import {
@@ -11,7 +11,6 @@ import {
 } from "@/lib/actions/ai.actions";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface AIMenuDropdownProps {
   roomId: string;
@@ -29,6 +28,7 @@ export default function AIMenuDropdown({
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingType, setProcessingType] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // States for different AI features
   const [suggestedTitle, setSuggestedTitle] = useState<string>("");
@@ -40,6 +40,7 @@ export default function AIMenuDropdown({
   const [showTitlePanel, setShowTitlePanel] = useState(false);
   const [showSuggestionsPanel, setShowSuggestionsPanel] = useState(false);
   const [showSummaryPanel, setShowSummaryPanel] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   // Listen for document content changes and update content state
   useEffect(() => {
@@ -57,14 +58,32 @@ export default function AIMenuDropdown({
     };
   }, [editor, currentUserType]);
 
+  // Handle clicking outside to close dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // Handler for generating title suggestion
-  const handleGenerateTitle = async () => {
+  const handleGenerateTitle = useCallback(async () => {
     if (docContent.trim().length < 20) {
       setError("Document content is too short. Add more content first.");
       setTimeout(() => setError(null), 3000);
       return;
     }
 
+    setShowDropdown(false);
     setIsProcessing(true);
     setProcessingType("title");
     setError(null);
@@ -94,16 +113,17 @@ export default function AIMenuDropdown({
       setIsProcessing(false);
       setProcessingType(null);
     }
-  };
+  }, [docContent]);
 
   // Handler for generating writing suggestions
-  const handleGetSuggestions = async () => {
+  const handleGetSuggestions = useCallback(async () => {
     if (docContent.trim().length < 100) {
       setError("Document content is too short. Add more content first.");
       setTimeout(() => setError(null), 3000);
       return;
     }
 
+    setShowDropdown(false);
     setIsProcessing(true);
     setProcessingType("suggestions");
     setError(null);
@@ -126,16 +146,17 @@ export default function AIMenuDropdown({
       setIsProcessing(false);
       setProcessingType(null);
     }
-  };
+  }, [docContent]);
 
   // Handler for generating document summary
-  const handleGenerateSummary = async () => {
+  const handleGenerateSummary = useCallback(async () => {
     if (docContent.trim().length < 100) {
       setError("Document content is too short. Add more content first.");
       setTimeout(() => setError(null), 3000);
       return;
     }
 
+    setShowDropdown(false);
     setIsProcessing(true);
     setProcessingType("summary");
     setError(null);
@@ -156,9 +177,7 @@ export default function AIMenuDropdown({
       setIsProcessing(false);
       setProcessingType(null);
     }
-  };
-
-  // Copy summary to clipboard with fallback method
+  }, [docContent]);
 
   // Close panels
   const dismissPanel = () => {
@@ -167,9 +186,9 @@ export default function AIMenuDropdown({
     setShowSummaryPanel(false);
   };
 
-  // Handle closing all panels when popover closes
-  const handlePopoverClose = () => {
-    dismissPanel();
+  // Toggle dropdown
+  const toggleDropdown = () => {
+    setShowDropdown((prev) => !prev);
   };
 
   // Only show for editors
@@ -180,7 +199,7 @@ export default function AIMenuDropdown({
   return (
     <>
       {/* AI Output Panels - positioned with higher z-index */}
-      <div className="fixed bottom-20 right-4 z-[100]">
+      <div className="fixed bottom-20 right-4 z-[1000]">
         <div className="flex flex-col items-end gap-2">
           {/* Error message */}
           {error && (
@@ -355,80 +374,85 @@ export default function AIMenuDropdown({
         </div>
       </div>
 
-      {/* AI Menu Button - positioned separately */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <Popover onOpenChange={(open) => !open && handlePopoverClose()}>
-          <PopoverTrigger asChild>
-            <Button
-              size="default"
-              variant="outline"
-              className="flex items-center gap-1 rounded-full bg-black text-white hover:bg-gray-900 hover:text-white border-white px-4 py-2"
-              title="AI Features"
-              disabled={isProcessing}
-            >
-              <Image
-                src="/assets/icons/magic-wand.svg"
-                alt="AI"
-                width={20}
-                height={20}
-                className="brightness-200 invert"
-              />
-              <span className="text-sm">AI</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-56 p-1 bg-black border border-white text-white"
-            align="end"
+      {/* AI Menu Button with Custom Dropdown - positioned separately */}
+      <div className="fixed bottom-4 right-4 z-[900]" ref={dropdownRef}>
+        <div className="relative">
+          {/* Main trigger button */}
+          <button
+            className="flex items-center gap-1 rounded-full bg-black text-white hover:bg-gray-900 hover:text-white border border-white px-4 py-2"
+            title="AI Features"
+            disabled={isProcessing}
+            onClick={toggleDropdown}
           >
-            <div className="flex flex-col gap-1">
-              <Button
-                variant="ghost"
-                onClick={handleGenerateTitle}
-                disabled={isProcessing || docContent.trim().length < 20}
-                className="justify-start text-sm text-white hover:bg-gray-800 hover:text-white gap-2 py-2"
-              >
-                <Image
-                  src="/assets/icons/journal-text.svg"
-                  alt="Title"
-                  width={16}
-                  height={16}
-                  className="brightness-200 invert"
-                />
-                <span>Generate Title</span>
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={handleGetSuggestions}
-                disabled={isProcessing || docContent.trim().length < 100}
-                className="justify-start text-sm text-white hover:bg-gray-800 hover:text-white gap-2 py-2"
-              >
-                <Image
-                  src="/assets/icons/journal-text.svg"
-                  alt="Suggestions"
-                  width={16}
-                  height={16}
-                  className="brightness-200 invert"
-                />
-                <span>Writing Tips</span>
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={handleGenerateSummary}
-                disabled={isProcessing || docContent.trim().length < 100}
-                className="justify-start text-sm text-white hover:bg-gray-800 hover:text-white gap-2 py-2"
-              >
-                <Image
-                  src="/assets/icons/file.svg"
-                  alt="Summary"
-                  width={16}
-                  height={16}
-                  className="brightness-200 invert"
-                />
-                <span>Summarize</span>
-              </Button>
+            <Image
+              src="/assets/icons/magic-wand.svg"
+              alt="AI"
+              width={20}
+              height={20}
+              className="brightness-200 invert"
+            />
+            <span className="text-sm">AI</span>
+          </button>
+
+          {/* Custom dropdown menu */}
+          {showDropdown && (
+            <div className="absolute bottom-full right-0 mb-2 w-56 p-1 bg-black border border-white text-white rounded-md shadow-lg z-[999] overflow-hidden">
+              <div className="flex flex-col gap-1">
+                <div
+                  onClick={handleGenerateTitle}
+                  className={`flex items-center justify-start gap-2 py-2 px-3 text-sm text-white hover:bg-gray-800 rounded cursor-pointer ${
+                    isProcessing || docContent.trim().length < 20
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  <Image
+                    src="/assets/icons/journal-text.svg"
+                    alt="Title"
+                    width={16}
+                    height={16}
+                    className="brightness-200 invert"
+                  />
+                  <span>Generate Title</span>
+                </div>
+                <div
+                  onClick={handleGetSuggestions}
+                  className={`flex items-center justify-start gap-2 py-2 px-3 text-sm text-white hover:bg-gray-800 rounded cursor-pointer ${
+                    isProcessing || docContent.trim().length < 100
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  <Image
+                    src="/assets/icons/journal-text.svg"
+                    alt="Suggestions"
+                    width={16}
+                    height={16}
+                    className="brightness-200 invert"
+                  />
+                  <span>Writing Tips</span>
+                </div>
+                <div
+                  onClick={handleGenerateSummary}
+                  className={`flex items-center justify-start gap-2 py-2 px-3 text-sm text-white hover:bg-gray-800 rounded cursor-pointer ${
+                    isProcessing || docContent.trim().length < 100
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  <Image
+                    src="/assets/icons/file.svg"
+                    alt="Summary"
+                    width={16}
+                    height={16}
+                    className="brightness-200 invert"
+                  />
+                  <span>Summarize</span>
+                </div>
+              </div>
             </div>
-          </PopoverContent>
-        </Popover>
+          )}
+        </div>
       </div>
     </>
   );

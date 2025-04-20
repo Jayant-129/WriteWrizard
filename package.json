@@ -6,18 +6,30 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "preinstall": "npx only-allow npm",
+    "postinstall": "echo 'Running postinstall script to ensure consistent dependencies'"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.2.4",
     "@clerk/themes": "^2.1.12",
     "@google/generative-ai": "^0.24.0",
-    "@lexical/react": "0.16.1",
-    "@liveblocks/client": "^2.3.0",
-    "@liveblocks/node": "^2.3.0",
-    "@liveblocks/react": "^2.3.0",
-    "@liveblocks/react-lexical": "2.3.0",
-    "@liveblocks/react-ui": "^2.3.0",
+    "@lexical/react": "0.24.0",
+    "@lexical/rich-text": "0.24.0",
+    "@lexical/list": "0.24.0",
+    "@lexical/link": "0.24.0",
+    "@lexical/code": "0.24.0",
+    "@lexical/selection": "0.24.0",
+    "@lexical/utils": "0.24.0",
+    "@lexical/clipboard": "0.24.0",
+    "@lexical/html": "0.24.0",
+    "@lexical/offset": "0.24.0",
+    "@lexical/text": "0.24.0",
+    "@liveblocks/client": "2.23.1",
+    "@liveblocks/node": "2.23.1",
+    "@liveblocks/react": "2.23.1",
+    "@liveblocks/react-lexical": "2.23.1",
+    "@liveblocks/react-ui": "2.23.1",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.1",
@@ -25,8 +37,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "jsm-editor": "^0.0.12",
-    "lexical": "0.16.1",
+    "lexical": "0.24.0",
     "lucide-react": "^0.408.0",
     "nanoid": "^5.0.7",
     "next": "14.2.5",
@@ -44,6 +55,33 @@
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "only-allow": "^1.1.1"
+  },
+  "resolutions": {
+    "lexical": "0.24.0",
+    "@lexical/*": "0.24.0",
+    "@liveblocks/core": "2.23.1"
+  },
+  "overrides": {
+    "lexical": "0.24.0",
+    "@lexical/react": "0.24.0",
+    "@lexical/rich-text": "0.24.0",
+    "@lexical/list": "0.24.0",
+    "@lexical/link": "0.24.0",
+    "@lexical/code": "0.24.0",
+    "@lexical/selection": "0.24.0",
+    "@lexical/utils": "0.24.0",
+    "@lexical/clipboard": "0.24.0",
+    "@lexical/html": "0.24.0",
+    "@lexical/offset": "0.24.0",
+    "@lexical/text": "0.24.0",
+    "@liveblocks/core": "2.23.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "npmConfig": {
+    "legacy-peer-deps": true
   }
 }

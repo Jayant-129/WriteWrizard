@@ -18,6 +18,7 @@ import {
   LiveblocksPlugin,
   useEditorStatus,
 } from "@liveblocks/react-lexical";
+import { useRoom } from "@liveblocks/react";
 import Loader from "../Loader";
 
 import FloatingToolbarPlugin from "./plugins/FloatingToolbarPlugin";
@@ -47,6 +48,13 @@ export function Editor({
 }) {
   const status = useEditorStatus();
   const { threads } = useThreads();
+  const room = useRoom();
+
+  // Make sure room is available
+  if (!room) {
+    console.error("Room is not available in the React tree");
+    return <div>Error loading editor: Room not available</div>;
+  }
 
   const initialConfig = liveblocksConfig({
     namespace: "Editor",
@@ -83,10 +91,10 @@ export function Editor({
               <HistoryPlugin />
               <AutoFocusPlugin />
               {currentUserType === "editor" && (
-                <AIMenuDropdown 
-                  roomId={roomId} 
-                  currentTitle={title} 
-                  currentUserType={currentUserType} 
+                <AIMenuDropdown
+                  roomId={roomId}
+                  currentTitle={title}
+                  currentUserType={currentUserType}
                 />
               )}
             </div>
