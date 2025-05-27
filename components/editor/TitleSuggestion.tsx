@@ -6,7 +6,7 @@ import { $getRoot } from "lexical";
 import { generateTitle, analyzeThemes } from "@/lib/actions/ai.actions";
 import { updateDocument } from "@/lib/actions/room.actions";
 import { Button } from "../ui/button";
-import Image from "next/image";
+import { X, Type, Sparkles, Loader2, PenTool } from "lucide-react";
 
 interface TitleSuggestionProps {
   roomId: string;
@@ -103,7 +103,7 @@ export default function TitleSuggestion({
           )}
 
           {isAnalyzing && (
-            <div className="rounded-md bg-dark-200 px-3 py-1 text-xs text-blue-100">
+            <div className="rounded-md bg-dark-200 px-3 py-1 text-xs text-red-100">
               AI processing document...
             </div>
           )}
@@ -113,7 +113,7 @@ export default function TitleSuggestion({
             <div className="w-80 rounded-lg bg-dark-200 p-4 shadow-lg border border-dark-300">
               <div className="flex items-start mb-2">
                 <div className="flex-grow">
-                  <h3 className="text-base font-semibold text-blue-400 flex items-center gap-1">
+                  <h3 className="text-base font-semibold text-red-400 flex items-center gap-1">
                     AI Title Suggestion
                   </h3>
                 </div>
@@ -123,27 +123,22 @@ export default function TitleSuggestion({
                   onClick={dismissSuggestion}
                   className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
                 >
-                  <Image
-                    src="/assets/icons/close.svg"
-                    width={12}
-                    height={12}
-                    alt="Close"
-                  />
+                  <X className="w-3 h-3" />
                 </Button>
               </div>
 
-              <p className="mb-4 text-sm text-blue-100">{suggestedTitle}</p>
+              <p className="mb-4 text-sm text-red-100">{suggestedTitle}</p>
 
               {documentThemes.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-xs text-blue-100 opacity-70 mb-1">
+                  <p className="text-xs text-red-100 opacity-70 mb-1">
                     Identified themes:
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {documentThemes.map((theme, index) => (
                       <span
                         key={index}
-                        className="text-xs bg-dark-400 text-blue-100/80 px-2 py-0.5 rounded-full"
+                        className="text-xs bg-dark-400 text-red-100/80 px-2 py-0.5 rounded-full"
                       >
                         {theme}
                       </span>
@@ -157,7 +152,7 @@ export default function TitleSuggestion({
                   variant="outline"
                   size="sm"
                   onClick={dismissSuggestion}
-                  className="bg-dark-300 text-blue-100 hover:bg-dark-400"
+                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
                 >
                   Dismiss
                 </Button>
@@ -165,17 +160,11 @@ export default function TitleSuggestion({
                   size="sm"
                   onClick={applyTitleSuggestion}
                   disabled={isLoading}
-                  className="bg-blue-500 text-white hover:bg-blue-400 flex items-center gap-1"
+                  className="bg-red-600 text-white hover:bg-red-500 flex items-center gap-1"
                 >
                   {isLoading ? (
                     <>
-                      <Image
-                        src="/assets/icons/loader.svg"
-                        alt="loading"
-                        width={16}
-                        height={16}
-                        className="animate-spin"
-                      />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Applying...</span>
                     </>
                   ) : (
@@ -192,16 +181,10 @@ export default function TitleSuggestion({
             disabled={isAnalyzing || docContent.trim().length < 20}
             size="sm"
             variant="outline"
-            className="flex items-center gap-1 rounded-full bg-dark-300 text-blue-100 hover:bg-dark-400"
+            className="flex items-center gap-1 rounded-full bg-dark-300 text-red-100 hover:bg-dark-400"
             title="Generate title suggestion"
           >
-            <Image
-              src="/assets/icons/journal-text.svg"
-              alt="Generate"
-              width={16}
-              height={16}
-              className="brightness-150 text-blue-300"
-            />
+            <PenTool className="w-4 h-4 text-red-300" />
             <span className="text-xs">Suggest Title</span>
           </Button>
         </div>

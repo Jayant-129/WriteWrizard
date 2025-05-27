@@ -1,0 +1,19 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ea580c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="24" cy="24" r="22" fill="url(#logoGradient)" stroke="#ffffff" stroke-width="2"/>
+  
+  <!-- Pen/Quill icon -->
+  <path d="M16 32L12 36L16 32ZM30 14L34 18L22 30L18 26L30 14Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M26 18L30 22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Writing lines -->
+  <path d="M14 38H20" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M12 42H18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

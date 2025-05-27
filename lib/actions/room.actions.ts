@@ -47,7 +47,9 @@ export const getDocument = async ({
   try {
     const room = await liveblocks.getRoom(roomId);
 
-    const hasAccess = Object.keys(room.usersAccesses).includes(userId);
+    const hasAccess =
+      Object.keys(room.usersAccesses).includes(userId) ||
+      room.metadata.email === userId;
 
     if (!hasAccess) {
       throw new Error("You do not have access to this document");
@@ -79,7 +81,20 @@ export const getDocuments = async (email: string) => {
   try {
     const rooms = await liveblocks.getRooms({ userId: email });
 
-    return parseStringify(rooms);
+    // Separate owned documents from shared documents
+    const ownedDocuments = rooms.data.filter(
+      (room) => room.metadata.email === email
+    );
+    const sharedDocuments = rooms.data.filter(
+      (room) => room.metadata.email !== email
+    );
+
+    return parseStringify({
+      data: rooms.data,
+      ownedDocuments,
+      sharedDocuments,
+      nextCursor: rooms.nextCursor,
+    });
   } catch (error) {
     console.log(`Error happened while getting rooms: ${error}`);
   }
@@ -116,6 +131,16 @@ export const updateDocumentAccess = async ({
         },
         roomId,
       });
+
+      // Broadcast permission change event
+      await liveblocks.broadcastEvent(roomId, {
+        type: "PERMISSION_UPDATED",
+        data: {
+          email,
+          userType,
+          updatedBy: updatedBy.name,
+        },
+      });
     }
 
     revalidatePath(`/documents/${roomId}`);
@@ -149,6 +174,7 @@ export const removeCollaborator = async ({
     return parseStringify(updatedRoom);
   } catch (error) {
     console.log(`Error happened while removing a collaborator: ${error}`);
+    throw error; // Re-throw the error so the component can handle it
   }
 };
 

@@ -5,7 +5,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getRoot } from "lexical";
 import { getSuggestions, generateSummary } from "@/lib/actions/ai.actions";
 import { Button } from "../ui/button";
-import Image from "next/image";
+import { X, Lightbulb, FileText } from "lucide-react";
 
 interface AIWritingAssistantProps {
   currentUserType: UserType;
@@ -143,12 +143,7 @@ export default function AIWritingAssistant({
                 onClick={dismissSuggestions}
                 className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
               >
-                <Image
-                  src="/assets/icons/close.svg"
-                  width={12}
-                  height={12}
-                  alt="Close"
-                />
+                <X className="w-3 h-3" />
               </Button>
             </div>
 
@@ -200,12 +195,7 @@ export default function AIWritingAssistant({
                 onClick={dismissSummary}
                 className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
               >
-                <Image
-                  src="/assets/icons/close.svg"
-                  width={12}
-                  height={12}
-                  alt="Close"
-                />
+                <X className="w-3 h-3" />
               </Button>
             </div>
 
@@ -245,13 +235,7 @@ export default function AIWritingAssistant({
               className="flex items-center gap-1 rounded-full bg-dark-300 text-blue-100 hover:bg-dark-400"
               title="Get writing suggestions"
             >
-              <Image
-                src="/assets/icons/journal-text.svg"
-                alt="Suggestions"
-                width={16}
-                height={16}
-                className="brightness-150 text-blue-300"
-              />
+              <Lightbulb className="w-4 h-4" />
               <span className="text-xs">Writing Tips</span>
             </Button>
 
@@ -263,13 +247,7 @@ export default function AIWritingAssistant({
               className="flex items-center gap-1 rounded-full bg-dark-300 text-blue-100 hover:bg-dark-400"
               title="Generate document summary"
             >
-              <Image
-                src="/assets/icons/file.svg"
-                alt="Summary"
-                width={16}
-                height={16}
-                className="brightness-150 text-blue-300"
-              />
+              <FileText className="w-4 h-4" />
               <span className="text-xs">Summarize</span>
             </Button>
           </div>

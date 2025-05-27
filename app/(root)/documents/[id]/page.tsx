@@ -27,17 +27,16 @@ const Document = async ({ params: { id } }: SearchParamProps) => {
       };
     }
 
+    const userAccess = room.usersAccesses[user.email];
     return {
       ...user,
-      userType: room.usersAccesses[user.email]?.includes("room:write")
-        ? "editor"
-        : "viewer",
+      userType: userAccess?.includes("room:write") ? "editor" : "viewer",
     };
   });
 
-  const currentUserType = room.usersAccesses[
-    clerkUser.emailAddresses[0].emailAddress
-  ]?.includes("room:write")
+  const currentUserAccess =
+    room.usersAccesses[clerkUser.emailAddresses[0].emailAddress];
+  const currentUserType = currentUserAccess?.includes("room:write")
     ? "editor"
     : "viewer";
 

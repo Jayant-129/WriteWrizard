@@ -10,7 +10,15 @@ import {
   generateSummary,
 } from "@/lib/actions/ai.actions";
 import { Button } from "../ui/button";
-import Image from "next/image";
+import {
+  Sparkles,
+  Type,
+  Lightbulb,
+  FileText,
+  X,
+  Loader2,
+  Wand2,
+} from "lucide-react";
 
 interface AIMenuDropdownProps {
   roomId: string;
@@ -179,16 +187,20 @@ export default function AIMenuDropdown({
     }
   }, [docContent]);
 
-  // Close panels
+  // Toggle dropdown - close if any panel is already showing
+  const toggleDropdown = () => {
+    // If any panel is showing, don't open dropdown
+    if (showTitlePanel || showSuggestionsPanel || showSummaryPanel) {
+      return;
+    }
+    setShowDropdown((prev) => !prev);
+  };
+
+  // Close panels and allow dropdown to be opened again
   const dismissPanel = () => {
     setShowTitlePanel(false);
     setShowSuggestionsPanel(false);
     setShowSummaryPanel(false);
-  };
-
-  // Toggle dropdown
-  const toggleDropdown = () => {
-    setShowDropdown((prev) => !prev);
   };
 
   // Only show for editors
@@ -210,7 +222,7 @@ export default function AIMenuDropdown({
 
           {/* Processing indicator */}
           {isProcessing && (
-            <div className="rounded-md bg-dark-200 px-3 py-1 text-xs text-blue-100">
+            <div className="rounded-md bg-dark-200 px-3 py-1 text-xs text-red-100">
               {processingType === "title" && "Generating title..."}
               {processingType === "suggestions" && "Analyzing writing..."}
               {processingType === "summary" && "Generating summary..."}
@@ -222,7 +234,7 @@ export default function AIMenuDropdown({
             <div className="w-80 rounded-lg bg-dark-200 p-4 shadow-lg border border-dark-300">
               <div className="flex items-start mb-2">
                 <div className="flex-grow">
-                  <h3 className="text-base font-semibold text-blue-400">
+                  <h3 className="text-base font-semibold text-red-400">
                     AI Title Suggestion
                   </h3>
                 </div>
@@ -232,27 +244,22 @@ export default function AIMenuDropdown({
                   onClick={dismissPanel}
                   className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
                 >
-                  <Image
-                    src="/assets/icons/close.svg"
-                    width={12}
-                    height={12}
-                    alt="Close"
-                  />
+                  <X className="w-3 h-3" />
                 </Button>
               </div>
 
-              <p className="mb-4 text-sm text-blue-100">{suggestedTitle}</p>
+              <p className="mb-4 text-sm text-red-100">{suggestedTitle}</p>
 
               {documentThemes.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-xs text-blue-100 opacity-70 mb-1">
+                  <p className="text-xs text-red-100 opacity-70 mb-1">
                     Identified themes:
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {documentThemes.map((theme, index) => (
                       <span
                         key={index}
-                        className="text-xs bg-dark-400 text-blue-100/80 px-2 py-0.5 rounded-full"
+                        className="text-xs bg-dark-400 text-red-100/80 px-2 py-0.5 rounded-full"
                       >
                         {theme}
                       </span>
@@ -266,7 +273,7 @@ export default function AIMenuDropdown({
                   variant="outline"
                   size="sm"
                   onClick={dismissPanel}
-                  className="bg-dark-300 text-blue-100 hover:bg-dark-400"
+                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
                 >
                   Dismiss
                 </Button>
@@ -279,7 +286,7 @@ export default function AIMenuDropdown({
             <div className="w-80 rounded-lg bg-dark-200 p-4 shadow-lg border border-dark-300">
               <div className="flex items-start mb-2">
                 <div className="flex-grow">
-                  <h3 className="text-base font-semibold text-blue-400">
+                  <h3 className="text-base font-semibold text-red-400">
                     Writing Suggestions
                   </h3>
                 </div>
@@ -289,12 +296,7 @@ export default function AIMenuDropdown({
                   onClick={dismissPanel}
                   className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
                 >
-                  <Image
-                    src="/assets/icons/close.svg"
-                    width={12}
-                    height={12}
-                    alt="Close"
-                  />
+                  <X className="w-3 h-3" />
                 </Button>
               </div>
 
@@ -302,9 +304,9 @@ export default function AIMenuDropdown({
                 {writingSuggestions.map((suggestion, index) => (
                   <li
                     key={index}
-                    className="text-sm text-blue-100 flex items-start gap-2"
+                    className="text-sm text-red-100 flex items-start gap-2"
                   >
-                    <span className="mt-0.5 text-blue-400">•</span>
+                    <span className="mt-0.5 text-red-400">•</span>
                     <span>{suggestion}</span>
                   </li>
                 ))}
@@ -315,7 +317,7 @@ export default function AIMenuDropdown({
                   variant="outline"
                   size="sm"
                   onClick={handleGenerateSummary}
-                  className="bg-dark-300 text-blue-100 hover:bg-dark-400"
+                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
                 >
                   Generate Summary
                 </Button>
@@ -323,7 +325,7 @@ export default function AIMenuDropdown({
                   variant="outline"
                   size="sm"
                   onClick={dismissPanel}
-                  className="bg-dark-300 text-blue-100 hover:bg-dark-400"
+                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
                 >
                   Dismiss
                 </Button>
@@ -336,7 +338,7 @@ export default function AIMenuDropdown({
             <div className="w-80 rounded-lg bg-dark-200 p-4 shadow-lg border border-dark-300">
               <div className="flex items-start mb-2">
                 <div className="flex-grow">
-                  <h3 className="text-base font-semibold text-blue-400">
+                  <h3 className="text-base font-semibold text-red-400">
                     Document Summary
                   </h3>
                 </div>
@@ -346,16 +348,11 @@ export default function AIMenuDropdown({
                   onClick={dismissPanel}
                   className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
                 >
-                  <Image
-                    src="/assets/icons/close.svg"
-                    width={12}
-                    height={12}
-                    alt="Close"
-                  />
+                  <X className="w-3 h-3" />
                 </Button>
               </div>
 
-              <p className="mb-4 text-sm text-blue-100 leading-relaxed">
+              <p className="mb-4 text-sm text-red-100 leading-relaxed">
                 {documentSummary}
               </p>
 
@@ -364,7 +361,7 @@ export default function AIMenuDropdown({
                   variant="outline"
                   size="sm"
                   onClick={dismissPanel}
-                  className="bg-dark-300 text-blue-100 hover:bg-dark-400"
+                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
                 >
                   Dismiss
                 </Button>
@@ -384,13 +381,7 @@ export default function AIMenuDropdown({
             disabled={isProcessing}
             onClick={toggleDropdown}
           >
-            <Image
-              src="/assets/icons/magic-wand.svg"
-              alt="AI"
-              width={20}
-              height={20}
-              className="brightness-200 invert"
-            />
+            <Wand2 className="w-5 h-5" />
             <span className="text-sm">AI</span>
           </button>
 
@@ -406,13 +397,7 @@ export default function AIMenuDropdown({
                       : ""
                   }`}
                 >
-                  <Image
-                    src="/assets/icons/journal-text.svg"
-                    alt="Title"
-                    width={16}
-                    height={16}
-                    className="brightness-200 invert"
-                  />
+                  <Type className="w-4 h-4" />
                   <span>Generate Title</span>
                 </div>
                 <div
@@ -423,13 +408,7 @@ export default function AIMenuDropdown({
                       : ""
                   }`}
                 >
-                  <Image
-                    src="/assets/icons/journal-text.svg"
-                    alt="Suggestions"
-                    width={16}
-                    height={16}
-                    className="brightness-200 invert"
-                  />
+                  <Lightbulb className="w-4 h-4" />
                   <span>Writing Tips</span>
                 </div>
                 <div
@@ -440,13 +419,7 @@ export default function AIMenuDropdown({
                       : ""
                   }`}
                 >
-                  <Image
-                    src="/assets/icons/file.svg"
-                    alt="Summary"
-                    width={16}
-                    height={16}
-                    className="brightness-200 invert"
-                  />
+                  <FileText className="w-4 h-4" />
                   <span>Summarize</span>
                 </div>
               </div>

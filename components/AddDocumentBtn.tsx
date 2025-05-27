@@ -2,9 +2,9 @@
 
 import { createDocument } from "@/lib/actions/room.actions";
 import { Button } from "./ui/button";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { Plus } from "lucide-react";
 
 const AddDocumentBtn = ({ userId, email }: AddDocumentBtnProps) => {
   const router = useRouter();
@@ -12,9 +12,6 @@ const AddDocumentBtn = ({ userId, email }: AddDocumentBtnProps) => {
   const processingRef = useRef(false);
 
   const addDocumentHandler = async () => {
-    // Double protection against multiple document creations:
-    // 1. Check state variable for UI feedback
-    // 2. Check ref for protection against potential double invocation from React
     if (isCreating || processingRef.current) return;
 
     setIsCreating(true);
@@ -24,7 +21,6 @@ const AddDocumentBtn = ({ userId, email }: AddDocumentBtnProps) => {
       const room = await createDocument({ userId, email });
 
       if (room) router.push(`/documents/${room.id}`);
-      // Don't reset isCreating here since we're navigating away
     } catch (error) {
       console.log(error);
       setIsCreating(false);
@@ -36,23 +32,22 @@ const AddDocumentBtn = ({ userId, email }: AddDocumentBtnProps) => {
     <Button
       type="submit"
       onClick={addDocumentHandler}
-      className="gradient-blue flex gap-1 shadow-md"
+      className="gradient-red modern-button group relative overflow-hidden"
       disabled={isCreating}
     >
+      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+
       {isCreating ? (
-        <Image
-          src="/assets/icons/loader.svg"
-          alt="loading"
-          width={24}
-          height={24}
-          className="animate-spin"
-        />
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          <span className="hidden sm:block">Creating...</span>
+        </div>
       ) : (
-        <Image src="/assets/icons/add.svg" alt="add" width={24} height={24} />
+        <div className="flex items-center gap-2">
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:block">New Document</span>
+        </div>
       )}
-      <p className="hidden sm:block">
-        {isCreating ? "Creating..." : "Start a blank document"}
-      </p>
     </Button>
   );
 };
