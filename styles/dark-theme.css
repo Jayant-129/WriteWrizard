@@ -7,6 +7,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Add smooth scrolling for the entire application */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Specific scrolling improvements for editor */
+.editor-inner .relative {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent scroll jumping */
+.editor-input {
+  scroll-margin-top: 0;
+}
+
 .other h2 {
   font-size: 18px;
   color: #444;
@@ -70,7 +86,7 @@ body {
 }
 
 .editor-input {
-  min-height: 500px;
+  min-height: 75vh;
   resize: none;
   font-size: 16px;
   line-height: 1.7;
@@ -84,6 +100,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     sans-serif;
   letter-spacing: 0.01em;
+  border: none;
+  width: 100%;
 }
 
 .editor-placeholder {

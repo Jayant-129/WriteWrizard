@@ -49,9 +49,15 @@
     @apply border-gray-800;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-black text-white font-sans antialiased;
     margin: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -154,7 +160,7 @@
   }
 
   .editor-wrapper {
-    @apply custom-scrollbar h-[calc(100vh-140px)] gap-4 overflow-auto px-4 pt-4 flex flex-col lg:flex-row lg:items-start lg:justify-center lg:gap-6 xl:gap-10 xl:pt-10 xl:px-5;
+    @apply gap-4 px-4 pt-4 flex flex-col lg:flex-row lg:items-start lg:justify-center lg:gap-6 xl:gap-10 xl:pt-10 xl:px-5;
   }
 
   .header {
@@ -305,7 +311,7 @@
 
   /* ======================== CollaborativeRoom */
   .collaborative-room {
-    @apply flex size-full max-h-screen flex-1 flex-col items-center overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-900;
+    @apply flex size-full min-h-screen flex-1 flex-col items-center bg-gradient-to-br from-gray-900 via-black to-gray-900;
   }
 }
 

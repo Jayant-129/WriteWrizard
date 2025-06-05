@@ -74,7 +74,7 @@ function EditorContent({
   return (
     <>
       <div className="comments-section w-full lg:w-80 flex-shrink-0 min-w-0 order-2 lg:order-1">
-        <div className="sticky top-6 space-y-4 overflow-hidden">
+        <div className="sticky top-6 space-y-4">
           <div className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4 shadow-xl">
             <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
               <svg
@@ -92,9 +92,9 @@ function EditorContent({
               </svg>
               Comments & Discussions
             </h3>
-            <div className="overflow-hidden">
-              <FloatingComposer className="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-600/50 rounded-lg shadow-lg mb-4 overflow-hidden" />
-              <div className="space-y-2 max-h-[400px] lg:max-h-[600px] overflow-y-auto custom-scrollbar">
+            <div className="space-y-4">
+              <FloatingComposer className="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-600/50 rounded-lg shadow-lg overflow-hidden" />
+              <div className="space-y-2 max-h-[400px] lg:max-h-[500px] overflow-y-auto custom-scrollbar">
                 <FloatingThreads threads={threads} />
                 <Comments />
               </div>
@@ -104,15 +104,17 @@ function EditorContent({
       </div>
 
       <div className="editor-section flex-1 flex flex-col items-center order-1 lg:order-2">
-        <div className="editor-inner min-h-[600px] lg:min-h-[1100px] relative h-fit w-full max-w-[800px] bg-black/80 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-2xl shadow-blue-500/10">
+        <div className="editor-inner w-full max-w-[800px] bg-black/80 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-2xl shadow-blue-500/10 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-xl"></div>
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable className="editor-input h-full relative z-10 p-8" />
-            }
-            placeholder={<Placeholder />}
-            ErrorBoundary={LexicalErrorBoundary}
-          />
+          <div className="relative z-10 min-h-[75vh]">
+            <RichTextPlugin
+              contentEditable={
+                <ContentEditable className="editor-input relative z-10 p-8 min-h-full outline-none" />
+              }
+              placeholder={<Placeholder />}
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+          </div>
           {currentUserType === "editor" && <FloatingToolbarPlugin />}
           <HistoryPlugin />
           <AutoFocusPlugin />
