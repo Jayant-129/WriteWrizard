@@ -38,19 +38,16 @@ export default function AIMenuDropdown({
   const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // States for different AI features
   const [suggestedTitle, setSuggestedTitle] = useState<string>("");
   const [documentThemes, setDocumentThemes] = useState<string[]>([]);
   const [writingSuggestions, setWritingSuggestions] = useState<string[]>([]);
   const [documentSummary, setDocumentSummary] = useState<string>("");
 
-  // Display states
   const [showTitlePanel, setShowTitlePanel] = useState(false);
   const [showSuggestionsPanel, setShowSuggestionsPanel] = useState(false);
   const [showSummaryPanel, setShowSummaryPanel] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Listen for document content changes and update content state
   useEffect(() => {
     if (currentUserType !== "editor") return;
 
