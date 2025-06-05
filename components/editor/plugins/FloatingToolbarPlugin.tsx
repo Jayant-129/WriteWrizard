@@ -25,7 +25,6 @@ export default function FloatingToolbar() {
   useEffect(() => {
     editor.registerUpdateListener(({ tags }) => {
       return editor.getEditorState().read(() => {
-        // Ignore selection updates related to collaboration
         if (tags.has("collaboration")) return;
 
         const selection = $getSelection();
@@ -108,7 +107,7 @@ function Toolbar({
         minWidth: "max-content",
       }}
     >
-      <div className="floating-toolbar">
+      <div className="bg-black/90 backdrop-blur-xl border border-gray-600/50 rounded-xl shadow-2xl p-2">
         <button
           onClick={() => {
             const isOpen = editor.dispatchCommand(
@@ -119,38 +118,16 @@ function Toolbar({
               onRangeChange(null);
             }
           }}
-          className="floating-toolbar-btn"
+          className="p-2.5 rounded-lg hover:bg-blue-600/20 hover:border-blue-500/30 text-gray-300 hover:text-white transition-all duration-200 border border-transparent hover:scale-105"
+          title="Add Comment"
         >
-          <MessageCircle className="w-6 h-6 text-gray-600" />
+          <MessageCircle className="w-5 h-5" />
         </button>
       </div>
     </div>,
     container
   );
 }
-
-/**
- * MIT License
- * Copyright (c) Meta Platforms, Inc. and affiliates.
-
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 function getDOMTextNode(element: Node | null): Text | null {
   let node = element;
@@ -176,15 +153,6 @@ function getDOMIndexWithinParent(node: ChildNode): [ParentNode, number] {
   return [parent, Array.from(parent.childNodes).indexOf(node)];
 }
 
-/**
- * Creates a selection range for the DOM.
- * @param editor - The lexical editor.
- * @param anchorNode - The anchor node of a selection.
- * @param _anchorOffset - The amount of space offset from the anchor to the focus.
- * @param focusNode - The current focus.
- * @param _focusOffset - The amount of space offset from the focus to the anchor.
- * @returns The range of selection for the DOM that was created.
- */
 export function createDOMRange(
   editor: LexicalEditor,
   anchorNode: LexicalNode,

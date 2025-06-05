@@ -209,224 +209,325 @@ export default function AIMenuDropdown({
   }
 
   return (
-    <>
-      {/* AI Output Panels - positioned with higher z-index */}
-      <div className="fixed bottom-20 right-4 z-[1000]">
-        <div className="flex flex-col items-end gap-2">
-          {/* Error message */}
-          {error && (
-            <div className="rounded-md bg-red-900/80 px-3 py-1 text-xs text-white">
-              {error}
-            </div>
-          )}
-
-          {/* Processing indicator */}
-          {isProcessing && (
-            <div className="rounded-md bg-dark-200 px-3 py-1 text-xs text-red-100">
-              {processingType === "title" && "Generating title..."}
-              {processingType === "suggestions" && "Analyzing writing..."}
-              {processingType === "summary" && "Generating summary..."}
-            </div>
-          )}
-
-          {/* Title suggestion panel */}
-          {showTitlePanel && suggestedTitle && (
-            <div className="w-80 rounded-lg bg-dark-200 p-4 shadow-lg border border-dark-300">
-              <div className="flex items-start mb-2">
-                <div className="flex-grow">
-                  <h3 className="text-base font-semibold text-red-400">
-                    AI Title Suggestion
-                  </h3>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={dismissPanel}
-                  className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
-
-              <p className="mb-4 text-sm text-red-100">{suggestedTitle}</p>
-
-              {documentThemes.length > 0 && (
-                <div className="mb-3">
-                  <p className="text-xs text-red-100 opacity-70 mb-1">
-                    Identified themes:
-                  </p>
-                  <div className="flex flex-wrap gap-1">
-                    {documentThemes.map((theme, index) => (
-                      <span
-                        key={index}
-                        className="text-xs bg-dark-400 text-red-100/80 px-2 py-0.5 rounded-full"
-                      >
-                        {theme}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-end">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={dismissPanel}
-                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
-                >
-                  Dismiss
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Writing suggestions panel */}
-          {showSuggestionsPanel && writingSuggestions.length > 0 && (
-            <div className="w-80 rounded-lg bg-dark-200 p-4 shadow-lg border border-dark-300">
-              <div className="flex items-start mb-2">
-                <div className="flex-grow">
-                  <h3 className="text-base font-semibold text-red-400">
-                    Writing Suggestions
-                  </h3>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={dismissPanel}
-                  className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
-
-              <ul className="mb-3 space-y-2">
-                {writingSuggestions.map((suggestion, index) => (
-                  <li
-                    key={index}
-                    className="text-sm text-red-100 flex items-start gap-2"
-                  >
-                    <span className="mt-0.5 text-red-400">•</span>
-                    <span>{suggestion}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="flex justify-between">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGenerateSummary}
-                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
-                >
-                  Generate Summary
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={dismissPanel}
-                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
-                >
-                  Dismiss
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Document summary panel */}
-          {showSummaryPanel && documentSummary && (
-            <div className="w-80 rounded-lg bg-dark-200 p-4 shadow-lg border border-dark-300">
-              <div className="flex items-start mb-2">
-                <div className="flex-grow">
-                  <h3 className="text-base font-semibold text-red-400">
-                    Document Summary
-                  </h3>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={dismissPanel}
-                  className="p-0 h-6 w-6 rounded-full hover:bg-dark-400"
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
-
-              <p className="mb-4 text-sm text-red-100 leading-relaxed">
-                {documentSummary}
-              </p>
-
-              <div className="flex justify-between">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={dismissPanel}
-                  className="bg-dark-300 text-red-100 hover:bg-dark-400"
-                >
-                  Dismiss
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* AI Menu Button with Custom Dropdown - positioned separately */}
-      <div className="fixed bottom-4 right-4 z-[900]" ref={dropdownRef}>
+    <div className="w-full max-w-4xl mx-auto">
+      {/* AI Menu Button with Custom Dropdown - positioned below comments */}
+      <div className="flex justify-center mt-8 mb-6" ref={dropdownRef}>
         <div className="relative">
           {/* Main trigger button */}
           <button
-            className="flex items-center gap-1 rounded-full bg-black text-white hover:bg-gray-900 hover:text-white border border-white px-4 py-2"
+            className={`group relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 p-[2px] transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-500/30 ${
+              isProcessing
+                ? "cursor-not-allowed"
+                : "hover:shadow-2xl hover:shadow-purple-500/25"
+            }`}
             title="AI Features"
             disabled={isProcessing}
             onClick={toggleDropdown}
           >
-            <Wand2 className="w-5 h-5" />
-            <span className="text-sm">AI</span>
+            <div className="relative rounded-2xl bg-gray-900/90 backdrop-blur-sm px-6 py-3 transition-all duration-300 group-hover:bg-gray-900/70">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  {isProcessing ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
+                  ) : (
+                    <Sparkles className="w-5 h-5 text-purple-400 transition-transform duration-300 group-hover:rotate-12" />
+                  )}
+                </div>
+                <span className="text-sm font-semibold text-white">
+                  AI Assistant
+                </span>
+                <div
+                  className={`transition-transform duration-300 ${
+                    showDropdown ? "rotate-180" : ""
+                  }`}
+                >
+                  <svg
+                    className="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
           </button>
 
           {/* Custom dropdown menu */}
           {showDropdown && (
-            <div className="absolute bottom-full right-0 mb-2 w-56 p-1 bg-black border border-white text-white rounded-md shadow-lg z-[999] overflow-hidden">
-              <div className="flex flex-col gap-1">
-                <div
-                  onClick={handleGenerateTitle}
-                  className={`flex items-center justify-start gap-2 py-2 px-3 text-sm text-white hover:bg-gray-800 rounded cursor-pointer ${
-                    isProcessing || docContent.trim().length < 20
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
-                  <Type className="w-4 h-4" />
-                  <span>Generate Title</span>
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl shadow-black/50 z-[999] overflow-hidden">
+              <div className="p-2">
+                <div className="mb-3 px-4 py-2">
+                  <h3 className="text-sm font-semibold text-gray-300">
+                    AI Tools
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enhance your writing with AI assistance
+                  </p>
                 </div>
-                <div
-                  onClick={handleGetSuggestions}
-                  className={`flex items-center justify-start gap-2 py-2 px-3 text-sm text-white hover:bg-gray-800 rounded cursor-pointer ${
-                    isProcessing || docContent.trim().length < 100
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
-                  <Lightbulb className="w-4 h-4" />
-                  <span>Writing Tips</span>
-                </div>
-                <div
-                  onClick={handleGenerateSummary}
-                  className={`flex items-center justify-start gap-2 py-2 px-3 text-sm text-white hover:bg-gray-800 rounded cursor-pointer ${
-                    isProcessing || docContent.trim().length < 100
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>Summarize</span>
+
+                <div className="space-y-1">
+                  <button
+                    onClick={handleGenerateTitle}
+                    disabled={isProcessing || docContent.trim().length < 20}
+                    className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${
+                      isProcessing || docContent.trim().length < 20
+                        ? "opacity-40 cursor-not-allowed bg-gray-800/30"
+                        : "hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-purple-600/20 hover:scale-[1.02] cursor-pointer group"
+                    }`}
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
+                      <Type className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="text-sm font-medium text-white">
+                        Generate Title
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Create a compelling title for your document
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={handleGetSuggestions}
+                    disabled={isProcessing || docContent.trim().length < 100}
+                    className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${
+                      isProcessing || docContent.trim().length < 100
+                        ? "opacity-40 cursor-not-allowed bg-gray-800/30"
+                        : "hover:bg-gradient-to-r hover:from-yellow-600/20 hover:to-orange-600/20 hover:scale-[1.02] cursor-pointer group"
+                    }`}
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center group-hover:bg-yellow-500/30 transition-colors">
+                      <Lightbulb className="w-5 h-5 text-yellow-400" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="text-sm font-medium text-white">
+                        Writing Tips
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Get suggestions to improve your writing
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={handleGenerateSummary}
+                    disabled={isProcessing || docContent.trim().length < 100}
+                    className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${
+                      isProcessing || docContent.trim().length < 100
+                        ? "opacity-40 cursor-not-allowed bg-gray-800/30"
+                        : "hover:bg-gradient-to-r hover:from-green-600/20 hover:to-emerald-600/20 hover:scale-[1.02] cursor-pointer group"
+                    }`}
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
+                      <FileText className="w-5 h-5 text-green-400" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="text-sm font-medium text-white">
+                        Summarize
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Generate a concise summary of your content
+                      </div>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
           )}
         </div>
       </div>
-    </>
+
+      {/* AI Output Panels - positioned in normal document flow */}
+      <div className="w-full flex flex-col items-center gap-4 mb-8">
+        {/* Error message */}
+        {error && (
+          <div className="w-full max-w-md rounded-xl bg-red-900/90 backdrop-blur-sm border border-red-500/50 px-4 py-3 text-sm text-white shadow-lg">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <X className="w-3 h-3 text-red-400" />
+              </div>
+              {error}
+            </div>
+          </div>
+        )}
+
+        {/* Processing indicator */}
+        {isProcessing && (
+          <div className="w-full max-w-md rounded-xl bg-gray-900/95 backdrop-blur-sm border border-gray-700/50 px-4 py-3 text-sm text-gray-300 shadow-lg">
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-5 h-5 animate-spin text-purple-400 flex-shrink-0" />
+              <span>
+                {processingType === "title" && "Generating title..."}
+                {processingType === "suggestions" && "Analyzing writing..."}
+                {processingType === "summary" && "Generating summary..."}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Title suggestion panel */}
+        {showTitlePanel && suggestedTitle && (
+          <div className="w-full max-w-2xl rounded-xl bg-gray-900/95 backdrop-blur-sm border border-gray-700/50 p-6 shadow-xl">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <Type className="w-4 h-4 text-blue-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">
+                  AI Title Suggestion
+                </h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={dismissPanel}
+                className="p-2 h-8 w-8 rounded-full hover:bg-gray-800/50 text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="mb-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <p className="text-blue-100 font-medium">{suggestedTitle}</p>
+            </div>
+
+            {documentThemes.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm text-gray-400 mb-2">Identified themes:</p>
+                <div className="flex flex-wrap gap-2">
+                  {documentThemes.map((theme, index) => (
+                    <span
+                      key={index}
+                      className="text-xs bg-gray-800/50 text-gray-300 px-3 py-1 rounded-full border border-gray-700/50"
+                    >
+                      {theme}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={dismissPanel}
+                className="bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 hover:text-white border-gray-600/50"
+              >
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Writing suggestions panel */}
+        {showSuggestionsPanel && writingSuggestions.length > 0 && (
+          <div className="w-full max-w-2xl rounded-xl bg-gray-900/95 backdrop-blur-sm border border-gray-700/50 p-6 shadow-xl">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                  <Lightbulb className="w-4 h-4 text-yellow-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">
+                  Writing Suggestions
+                </h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={dismissPanel}
+                className="p-2 h-8 w-8 rounded-full hover:bg-gray-800/50 text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              {writingSuggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20"
+                >
+                  <div className="w-6 h-6 rounded-full bg-yellow-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs font-medium text-yellow-400">
+                      {index + 1}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-200 leading-relaxed">
+                    {suggestion}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-between gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleGenerateSummary}
+                className="bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 hover:text-white border-gray-600/50"
+              >
+                Generate Summary
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={dismissPanel}
+                className="bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 hover:text-white border-gray-600/50"
+              >
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Document summary panel */}
+        {showSummaryPanel && documentSummary && (
+          <div className="w-full max-w-2xl rounded-xl bg-gray-900/95 backdrop-blur-sm border border-gray-700/50 p-6 shadow-xl">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">
+                  Document Summary
+                </h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={dismissPanel}
+                className="p-2 h-8 w-8 rounded-full hover:bg-gray-800/50 text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+              <p className="text-gray-200 leading-relaxed">{documentSummary}</p>
+            </div>
+
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={dismissPanel}
+                className="bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 hover:text-white border-gray-600/50"
+              >
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

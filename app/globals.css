@@ -154,7 +154,7 @@
   }
 
   .editor-wrapper {
-    @apply custom-scrollbar h-[calc(100vh-140px)] gap-5 overflow-auto px-5 pt-5 lg:flex-row lg:items-start lg:justify-center  xl:gap-10 xl:pt-10;
+    @apply custom-scrollbar h-[calc(100vh-140px)] gap-4 overflow-auto px-4 pt-4 flex flex-col lg:flex-row lg:items-start lg:justify-center lg:gap-6 xl:gap-10 xl:pt-10 xl:px-5;
   }
 
   .header {
@@ -202,15 +202,15 @@
   }
 
   .comments-container {
-    @apply mb-10 space-y-4 lg:w-fit flex w-full flex-col items-center justify-center;
+    @apply space-y-4 flex flex-col w-full overflow-hidden;
   }
 
   .comment-composer {
-    @apply w-full max-w-[800px] border border-gray-800 bg-gray-900 shadow-sm lg:w-[350px];
+    @apply w-full border border-gray-800 bg-gray-900 shadow-sm overflow-hidden;
   }
 
   .comment-thread {
-    @apply w-full max-w-[800px] border border-gray-800 bg-gray-900 shadow-sm lg:w-[350px] transition-all;
+    @apply w-full border border-gray-800 bg-gray-900 shadow-sm transition-all overflow-hidden;
   }
 
   .loader {
@@ -361,6 +361,47 @@
 .lb-comment-reaction {
   background-color: #111111;
   color: #fff;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.lb-composer {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.lb-floating-composer {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.lb-thread {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.lb-composer-editor {
+  width: 100% !important;
+  max-width: 100% !important;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.lb-comment-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Ensure all Liveblocks components respect container boundaries */
+.lb-root * {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .lb-button {

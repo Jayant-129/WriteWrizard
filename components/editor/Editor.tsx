@@ -16,25 +16,23 @@ import {
   FloatingThreads,
   liveblocksConfig,
   LiveblocksPlugin,
-  useEditorStatus,
+  useIsEditorReady,
 } from "@liveblocks/react-lexical";
 import { useRoom } from "@liveblocks/react";
 import Loader from "../Loader";
 
 import FloatingToolbarPlugin from "./plugins/FloatingToolbarPlugin";
-import TitleSuggestion from "./TitleSuggestion";
-import AIWritingAssistant from "./AIWritingAssistant";
 import AIMenuDropdown from "./AIMenuDropdown";
 import { useThreads } from "@liveblocks/react/suspense";
 import Comments from "../Comments";
 import { DeleteModal } from "../DeleteModal";
 
-// Catch any errors that occur during Lexical updates and log them
-// or throw them as needed. If you don't throw them, Lexical will
-// try to recover gracefully without losing user data.
-
 function Placeholder() {
-  return <div className="editor-placeholder">Enter some rich text...</div>;
+  return (
+    <div className="editor-placeholder text-gray-500 text-lg">
+      ✨ Start writing your masterpiece...
+    </div>
+  );
 }
 
 export function Editor({
@@ -46,14 +44,23 @@ export function Editor({
   currentUserType: UserType;
   title: string;
 }) {
-  const status = useEditorStatus();
+  const isEditorReady = useIsEditorReady();
   const { threads } = useThreads();
   const room = useRoom();
+  // Add debugging
+  console.log("Editor ready:", isEditorReady);
+  console.log("Room available:", !!room);
 
-  // Make sure room is available
   if (!room) {
     console.error("Room is not available in the React tree");
-    return <div>Error loading editor: Room not available</div>;
+    return (
+      <div className="flex items-center justify-center h-64 text-red-400 bg-red-900/20 rounded-lg border border-red-500">
+        <div className="text-center">
+          <div className="text-2xl mb-2">⚠️</div>
+          <div>Error loading editor: Room not available</div>
+        </div>
+      </div>
+    );
   }
 
   const initialConfig = liveblocksConfig({
@@ -69,42 +76,91 @@ export function Editor({
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="editor-container size-full">
-        <div className="toolbar-wrapper flex min-w-full justify-between">
-          <ToolbarPlugin />
-          {currentUserType === "editor" && <DeleteModal roomId={roomId} />}
+      <div className="editor-container size-full bg-gradient-to-br from-gray-900 via-black to-gray-900">
+        {/* Toolbar Section */}
+        <div className="toolbar-wrapper flex min-w-full justify-between items-center p-4 bg-black/80 backdrop-blur-xl border-b border-blue-500/20 shadow-lg">
+          <div className="flex items-center">
+            <ToolbarPlugin />
+          </div>
+          <div className="flex items-center">
+            {currentUserType === "editor" && <DeleteModal roomId={roomId} />}
+          </div>
         </div>
 
-        <div className="editor-wrapper flex flex-col items-center justify-start">
-          {status === "not-loaded" || status === "loading" ? (
-            <Loader />
-          ) : (
-            <div className="editor-inner min-h-[1100px] relative mb-5 h-fit w-full max-w-[800px] shadow-md lg:mb-10">
-              <RichTextPlugin
-                contentEditable={
-                  <ContentEditable className="editor-input h-full" />
-                }
-                placeholder={<Placeholder />}
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              {currentUserType === "editor" && <FloatingToolbarPlugin />}
-              <HistoryPlugin />
-              <AutoFocusPlugin />
-              {currentUserType === "editor" && (
-                <AIMenuDropdown
-                  roomId={roomId}
-                  currentTitle={title}
-                  currentUserType={currentUserType}
-                />
-              )}
+        {/* Main Content Area - Three Column Layout */}
+        <div className="editor-wrapper flex min-h-screen p-4 md:p-6 gap-4 md:gap-6 flex-col lg:flex-row">
+          {!isEditorReady ? (
+            <div className="flex flex-col items-center justify-center h-96 w-full">
+              <Loader />
+              <p className="text-gray-400 mt-4 animate-pulse">
+                Loading your workspace...
+              </p>
+              <p className="text-gray-500 text-sm mt-2">Ready: {isEditorReady ? 'Yes' : 'No'}</p>
             </div>
-          )}
+          ) : (
+            <>
+              {/* Left Column - Comments Section */}
+              <div className="comments-section w-full lg:w-80 flex-shrink-0 min-w-0 order-2 lg:order-1">
+                <div className="sticky top-6 space-y-4 overflow-hidden">
+                  <div className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4 shadow-xl">
+                    <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                      <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-1.946-.274A5.978 5.978 0 0111 20c-3.309 0-6-2.691-6-6 0-1.075.29-2.085.794-2.952A8.001 8.001 0 1121 12z" />
+                      </svg>
+                      Comments & Discussions
+                    </h3>
+                    <div className="overflow-hidden">
+                      <LiveblocksPlugin>
+                        <FloatingComposer className="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-600/50 rounded-lg shadow-lg mb-4 overflow-hidden" />
+                        <div className="space-y-2 max-h-[400px] lg:max-h-[600px] overflow-y-auto custom-scrollbar">
+                          <FloatingThreads threads={threads} />
+                          <Comments />
+                        </div>
+                      </LiveblocksPlugin>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <LiveblocksPlugin>
-            <FloatingComposer className="w-[350px]" />
-            <FloatingThreads threads={threads} />
-            <Comments />
-          </LiveblocksPlugin>
+              {/* Center Column - Text Editor */}
+              <div className="editor-section flex-1 flex flex-col items-center order-1 lg:order-2">
+                <div className="editor-inner min-h-[600px] lg:min-h-[1100px] relative h-fit w-full max-w-[800px] bg-black/80 backdrop-blur-xl border border-gray-700/50 rounded-xl shadow-2xl shadow-blue-500/10">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-xl"></div>
+                  <RichTextPlugin
+                    contentEditable={
+                      <ContentEditable className="editor-input h-full relative z-10 p-8" />
+                    }
+                    placeholder={<Placeholder />}
+                    ErrorBoundary={LexicalErrorBoundary}
+                  />
+                  {currentUserType === "editor" && <FloatingToolbarPlugin />}
+                  <HistoryPlugin />
+                  <AutoFocusPlugin />
+                </div>
+              </div>
+
+              {/* Right Column - AI Assistant */}
+              <div className="ai-section w-full lg:w-80 flex-shrink-0 order-3">
+                <div className="sticky top-6">
+                  <div className="bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4 shadow-xl">
+                    <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                      <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                      AI Writing Assistant
+                    </h3>
+                    {currentUserType === "editor" && (
+                      <AIMenuDropdown
+                        roomId={roomId}
+                        currentTitle={title}
+                        currentUserType={currentUserType}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </LexicalComposer>
