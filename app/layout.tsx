@@ -13,11 +13,12 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "WriteWizard",
+  title: "WriteWrizard",
   description: "Your go-to collaborative writing platform",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/assets/images/logo.png", sizes: "192x192" },
     ],
     apple: "/assets/images/logo.png",

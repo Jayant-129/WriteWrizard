@@ -1,4 +1,4 @@
-import { PenTool } from "lucide-react";
+import Image from "next/image";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -8,9 +8,9 @@ interface LogoProps {
 
 const Logo = ({ size = "md", showText = true, className = "" }: LogoProps) => {
   const sizeClasses = {
-    sm: "w-6 h-6",
-    md: "w-8 h-8",
-    lg: "w-12 h-12",
+    sm: 24,
+    md: 32,
+    lg: 48,
   };
 
   const textSizeClasses = {
@@ -21,9 +21,13 @@ const Logo = ({ size = "md", showText = true, className = "" }: LogoProps) => {
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <div className="p-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl shadow-lg">
-        <PenTool className={`${sizeClasses[size]} text-white`} />
-      </div>
+      <Image
+        src="/assets/icons/logo.svg"
+        alt="WriteWrizard Logo"
+        width={sizeClasses[size]}
+        height={sizeClasses[size]}
+        className="flex-shrink-0"
+      />
       {showText && (
         <h1
           className={`${textSizeClasses[size]} font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent`}
